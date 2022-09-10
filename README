@@ -1,0 +1,7 @@
+evl_idt-264codec_VS_x264codec.py ------主转码codec评测脚本
+ploy.py绘图，及计算BD-rate脚本——————
+系统中可能没有转装matplotlib等依赖模块，这是需要导出output/result.txt到开发机器上或者安装有赖模块的机器中运行
+
+!##edit by wjl MCT-2019
+1,the videos should be named by 'A/B/C/D'-'name'-'resolution&framerate'.mp4
+2,src_video.list was generate by command 'ls *.mp4 1>src_video.list'
