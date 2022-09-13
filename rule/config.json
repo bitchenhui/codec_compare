@@ -1,0 +1,57 @@
+{
+  "env_conf" :
+  {
+    "encoder" : "O264rtEncTest",
+    "ffmpeg" :  "ffmpeg",
+    "seq_json": "sequences.json"
+  },
+
+  "gop_param_set" :
+  [
+    {"gop_type": "IPPPP_iper_1s", "params": "-iper 15 -numtl 1 "  },
+    {"gop_type": "IPPPP_iper_2s", "params": "-iper 30 -numtl 1 "  },
+    {"gop_type": "IPPPP_iper_3s", "params": "-iper 45 -numtl 1 "  },
+    {"gop_type": "IPPPP-svc",     "params": "-iper 1024 -numtl 3 "},
+    {"gop_type": "IPPPP",         "params": "-iper 1000 "         }
+  ],
+
+  "rc_param_set" :
+  [
+    {"mode": "cqp", "params": "-rc -1 -dprofile 0 100 -maxqp 50 -minqp 0 -threadIdc 1 -lqp 0 {q} "                                        },
+    {"mode": "cbr", "params": "-rc 1 -tarb {b} -maxbrTotal {b} -ltarb 0 {b} -lmaxb 0 {b} -dprofile 0 100 -maxqp 50 -minqp 0 -threadIdc 1 "}
+  ],
+
+  "additional_param_set" :
+  [
+    {"name": "low_camera",                        "params": "-complexity 0 -utype 0 -ltr 0 "                                    },
+    {"name": "medium_camera",                     "params": "-complexity 1 -utype 0 -ltr 0 "                                    },
+    {"name": "medium_camera_i8x8",                "params": "-complexity 1 -utype 0 -ltr 0 -dct8x8 1"                           },
+    {"name": "low_camera—denoising",              "params": "-complexity 0 -utype 0 -ltr 0 -denois 1 "                          },
+    {"name": "low_camera—scene_change_detection", "params": "-complexity 0 -utype 0 -ltr 0 -scene 1 "                           },
+    {"name": "low_camera—background_detection",   "params": "-complexity 0 -utype 0 -ltr 0 -bgd 1 "                             },
+    {"name": "low_camera—adaptive_quantization",  "params": "-complexity 0 -utype 0 -ltr 0 -aq 1 "                              },
+    {"name": "low_camera_long_term_reference",    "params": "-complexity 1 -utype 0 -refctrl 1 -ltr 1 -ltrper 5 -ackdelay 40 "  },
+    {"name": "low_desktop",                       "params": "-complexity 0 -utype 1 -ltr 0 "                                    },
+    {"name": "medium_desktop",                    "params": "-complexity 1 -utype 1 -ltr 0 "                                    }
+  ],
+
+  "eval_qp_set" : [22, 27, 32, 37],
+
+  "encode_task_template" : "{encoder} -savc 0 -spsid 1 -cabac 1 -nalsize 0 -deblockIdc 0 -alphaOffset 0 -betaOffset 0 -loadbalancing 1 -fs 0 -denois 0 -scene 0 -bgd 0 -aq 0 -numl 1 -org {seq_name}.yuv -bf {output_name} -sw {wdt} -sh {hgt} -frin {fps} -frms {frm} -slcmd 0 0 -slcsize 0 1500 -slcnum 0 1 -slcmbnum 0 960 -dw 0 {wdt} -dh 0 {hgt} -frout 0 {fps} ",
+  "decode_task_template" : "{decoder} {output_name} -o {dec_name} -t 1 ",
+  "camera_test_option" :
+  {
+    "rc": [0, 1],
+    "gop": [4],
+    "additional": [0, 1, 7],
+    "test_type": 0
+  },
+
+  "desktop_test_option" :
+  {
+    "rc": [0],
+    "gop": [4],
+    "additional": [8, 9],
+    "test_type": 0
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "linux" : 
+  {
+    "output_path" : ".",
+    "seq_path" : "."
+  },
+
+  "mac" :
+  {
+    "output_path" : "",
+    "seq_path" : ""
+  },
+
+  "win": {
+     "output_path": "",
+     "seq_path": ""
+  },
+
+  "camera_seqs_info" :
+  [
+    { "class":"level0", "sub_path": "", "seq_name":"VID_1280x720_cabac_temporal_direct", "seq_ext":".264", "wdt": 1280, "hgt": 720, "frm": 300, "fps": 30, "bitrate": [1000, 800, 600, 200], "csp": 1 },
+    { "class":"level0", "sub_path": "", "seq_name":"VID_1920x1080_cavlc_temporal_direct", "seq_ext":".264", "wdt": 1920, "hgt":1080, "frm": 54, "fps": 25, "bitrate": [2000, 1500, 1000, 800], "csp": 1 }
+  ],
+
+  "desktop_seqs_info" :
+  [
+  ],
+
+  "camera_run_seq" : ["level0"],
+  "desktop_run_seq" : ["level0"]
+}

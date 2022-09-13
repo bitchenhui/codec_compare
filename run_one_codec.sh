@@ -4,7 +4,11 @@
 # intro:prepare to codectest in mac
 # rely：yasm,nasm
 # get_prepared.sh
-runFFmpeg(){
+
+
+runMain(){   
+    local codec_name=$1
+    local currentDir=`pwd`
     #下载静态版本ffmpeg
     source="ffmpeg"
     version="-5.1.1"
@@ -21,13 +25,10 @@ runFFmpeg(){
         #--enable-libxavs --enable-libxvid --enable-libzimg --enable-libzmq --enable-libzvbi --enable-version3 --pkg-config-flags=--static --disable-ffplay"
 
     fi
-    local currentDir=`pwd`
     #获得ffmpeg权限
     chmod +x ${currentDir}/ffmpeg
-}
 
-runMain(){   
-    runFFmpeg
+    python3 -u ${currentDir}/src/main.py -c ${codec_name}
 }
-
-runMain
+Codec1=$1
+runMain    ${Codec1}
