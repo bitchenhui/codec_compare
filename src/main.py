@@ -20,20 +20,19 @@ import tempfile
 parser=argparse.ArgumentParser(
     description='''The tool is used to evalute the quality of video codec, such as h264/h265 and so on. ''',
     epilog="""the end of help.""")
-parser.add_argument('--video_list', type=str, 
-    default='./src/src_video.list', help='the source video list in ./src/ ')
-parser.add_argument("-o", "--Output_options", type=str, 
-    help='three steps of the program', default='all', choices=['video', 'result', 'figure', 'all'])
+parser.add_argument("-m", "--mode_option", type=str,
+    help='4 steps of the program', default='all', choices=['psnr&ssim', 'vmaf', 'bdrate', 'all'])
 parser.add_argument("-c", "--codec_name", type=str, 
     help='specific the codec', default='O264rtEncTest')
 args=parser.parse_args()
 
-def parse_options(args):
+def parse_options(arg1, arg2):
     print(args)
     params = {
     "scene" : "camera",
-    "codec" : args,
-    "config" : args+".json"
+    "codec" : arg1,
+    "level" : arg2,
+    "config" : arg1+".json"
     }
     return params
 
@@ -151,19 +150,26 @@ def run_codec_task(param):
     # prj_path=os.getcwd()
     prj_path=os.path.abspath(os.path.join(os.getcwd(), ".."))
     print (os.getcwd(),param)
-    json_file=os.path.join(prj_path, "rule", "config.json")
+    json_file=os.path.join(prj_path, "rule", param['config'])
     with open(json_file, 'r') as input_json:
         params = load_json(input_json, param['scene'])
+
   
 
 if __name__ == '__main__':
     codec_evl = ''
+    codec_evl_level= ''
     if (args.codec_name):
         codec_evl = args.codec_name
     else:
         print ("please input the codec name!")
         exit(1)
-    param_dict = parse_options(codec_evl)
+    if (args.mode_option):
+        codec_evl_level = args.mode_option
+    else:
+        print ("please input the codec evl mode!")
+        exit(1)
+    param_dict = parse_options(codec_evl, codec_evl_level)
     
     run_codec_task(param_dict)
 
