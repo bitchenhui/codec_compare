@@ -3,11 +3,11 @@
 # date:20220910
 # intro:prepare to codectest in mac
 # rely：yasm,nasm
-# get_prepared.sh
 
 
 runMain(){   
     local codec_name=$1
+    local codec_level=$2
     local currentDir=`pwd`
     #下载静态版本ffmpeg
     source="ffmpeg"
@@ -28,7 +28,8 @@ runMain(){
     #获得ffmpeg权限
     chmod +x ${currentDir}/ffmpeg
 
-    python3 -u ${currentDir}/src/main.py -c ${codec_name}
+    python3 -u ${currentDir}/src/main.py -m ${codec_level} -c ${codec_name}
 }
 Codec1=$1
-runMain    ${Codec1}
+Level1=$2
+runMain    "${Codec1}" "${Level1}"

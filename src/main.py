@@ -55,49 +55,22 @@ def load_json(input_json, scene, configuration=None, ssim=False, vmaf=False):
   # cur_folder = os.getcwd()
   cur_folder = os.path.abspath(os.path.join(os.getcwd(), ".."))
   info_sys = input_dicts['env_conf']
-#   if cur_sys == 'Windows':
-#     params["exe_folder"] = os.path.join(str(cur_folder), "output", "win")
-#     if encoder_exe != None:
-#       info_sys['encoder'] = encoder_exe
-#     info_sys['encoder'] = os.path.join(params["exe_folder"], info_sys['encoder'] + ".exe")
-#     info_sys['decoder'] = os.path.join(cur_folder, "qci_test", "bin", "win",  info_sys['decoder'] + ".exe")
-#     info_sys['ffmpeg'] = os.path.join(params["exe_folder"], info_sys['ffmpeg'] + ".exe")
-#     info_sys['vmaf'] = os.path.join(params["exe_folder"], info_sys['vmaf'] + ".exe")   
-#   elif cur_sys == 'Darwin':
-#     params["exe_folder"] = os.path.join(str(cur_folder), "output", "mac")
-#     if encoder_exe != None:
-#       info_sys['encoder'] = encoder_exe
-#     info_sys['encoder'] = os.path.join(params["exe_folder"], info_sys['encoder'])
-#     info_sys['decoder'] = os.path.join(cur_folder, "qci_test", "bin", "mac",  info_sys['decoder'])
-#     info_sys['ffmpeg'] = os.path.join(params["exe_folder"], info_sys['ffmpeg'])
-#     info_sys['vmaf'] = os.path.join(params["exe_folder"], info_sys['vmaf'])
-#   elif cur_sys == 'Linux':
-#     params["exe_folder"] = os.path.join(str(cur_folder), "output", "linux")
-#     if encoder_exe != None:
-#       info_sys['encoder'] = encoder_exe
-#     info_sys['encoder'] = os.path.join(params["exe_folder"], info_sys['encoder'])
-#     info_sys['decoder'] = os.path.join(cur_folder, "qci_test", "bin", "linux", info_sys['decoder'])
-#     info_sys['ffmpeg'] = os.path.join(params["exe_folder"], info_sys['ffmpeg'])
-#     info_sys['vmaf'] = os.path.join(params["exe_folder"], info_sys['vmaf'])
-#   if info_sys == None:
-#     print("Invalid platform")
-#     exit(1)
 
-  params['enc'] = info_sys['encoder']
-  params['ffmpeg'] = info_sys['ffmpeg']
+  params['enc'] = info_sys['encoder'] #待测试编码器名字
+  params['ffmpeg'] = info_sys['ffmpeg'] #依赖ffmpeg工具
   # load other info
-  params['gop'] = input_dicts['gop_param_set']
-  params['rc'] = input_dicts['rc_param_set']
-  params['ext'] = input_dicts['additional_param_set']
-  params['enc_cmd'] = input_dicts['encode_task_template']
-  params['dec_cmd'] = input_dicts['decode_task_template']
-  params['opt'] = input_dicts[scene + '_test_option']
-  params['qps'] = input_dicts['eval_qp_set']
+  params['gop'] = input_dicts['gop_param_set'] #gop设置
+  params['rc'] = input_dicts['rc_param_set'] #码率控制参数设置cqp和cbr
+  params['ext'] = input_dicts['additional_param_set'] #额外编码器设置，编码速度/预处理等
+  params['enc_cmd'] = input_dicts['encode_task_template'] #编码器命令行模版
+  params['dec_cmd'] = input_dicts['decode_task_template'] #解码器命令行模版，目前忽略用ffmpeg
+  params['opt'] = input_dicts[scene + '_test_option'] #具体测试选取哪些参数组合
+  params['qps'] = input_dicts['eval_qp_set'] #量化参数qp设置，适应cqp
 
   if configuration != None:
     params['opt'] = configuration
 
-  seq_json = os.path.join(str(cur_folder), "rule", info_sys['seq_json'])
+  seq_json = os.path.join(str(cur_folder), "rule", info_sys['seq_json']) #序列目录
   print(seq_json)
   with open(seq_json, 'r') as seqs_json_file:
     seq_dict = json.load(seqs_json_file)
@@ -110,15 +83,15 @@ def load_json(input_json, scene, configuration=None, ssim=False, vmaf=False):
     if seq_info_sys == None:
       print("Invalid platform")
       exit(1)
-    params['out_path'] = os.path.join(cur_folder, "output")
+    params['out_path'] = os.path.join(cur_folder, "output") #输出路径
     params['seq_path'] = os.path.join(cur_folder, "sequence")
-    params['seq'] = seq_dict[scene + '_seqs_info']
+    params['seq'] = seq_dict[scene + '_seqs_info'] #具体待测试序列信息
     params['run_seq'] = seq_dict[scene + '_run_seq']
 
   # Detect if the encoder or decoder is existed.
   # If not existed, exit the program.
   # If existed, give permission to both encoder and decoder on Linux and Mac.
-  codec_path = os.path.join(cur_folder, "bin", params['enc'])
+  codec_path = os.path.join(cur_folder, "bin", params['enc'])#待测试codec路径和文件名
   print (codec_path)
   if not os.path.exists(codec_path):
     print("Encoder does not exist:" + params['enc'])
@@ -128,21 +101,9 @@ def load_json(input_json, scene, configuration=None, ssim=False, vmaf=False):
 #     print("Decoder does not exist")
 #     sys.exit(1)
   ffmpeg_path = os.path.join(cur_folder, params['ffmpeg'])
-  if ssim == True or vmaf == True:
-    # if not os.path.exists(params['dec']):
-    #   print("Decoder does not exist: " + params['dec'])
-    #   exit(1)
-    if not os.path.exists(params['ffmpeg']):
-      print("FFMPEG does not exist:" + params['ffmpeg'])
-      exit(1)
-    # if vmaf == True and not os.path.exists(info_sys['vmaf']):
-    #   print("VMAF does not exist:" + params['vmaf'])
-    #   exit(1)
 
   if cur_sys == 'Darwin' or cur_sys == 'Linux':
     os.system('chmod +x ' + codec_path)
-    if ssim == True or vmaf == True:
-      os.system('chmod +x ' + params['ffmpeg'])
 #   print(params)
   return params
 
@@ -152,7 +113,7 @@ def run_codec_task(param):
     print (os.getcwd(),param)
     json_file=os.path.join(prj_path, "rule", param['config'])
     with open(json_file, 'r') as input_json:
-        params = load_json(input_json, param['scene'])
+        params = load_json(input_json, param['scene']) #成功解析命令和测试文件源信息
 
   
 
